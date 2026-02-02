@@ -1,97 +1,307 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Analog Clock - World Clock Application
 
-# Getting Started
+A beautiful, feature-rich **React Native** mobile application that displays an **analog clock** showing the current time across different timezones around the world. This cross-platform app runs on both iOS and Android with smooth animations and offline support.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+![React Native](https://img.shields.io/badge/React%20Native-0.83.1-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-## Step 1: Start Metro
+## 📱 Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### Core Functionality
+- **Analog Clock Display**: Beautiful analog clock with hour, minute, and second hands
+- **Digital Time Display**: Complementary digital time display with AM/PM indicator
+- **Timezone Selection**: Choose from hundreds of timezones worldwide
+- **Real-time Updates**: Clock updates every second with smooth animations
+- **Offline Support**: SQLite database caching for offline functionality
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+### Technical Highlights
+- **Smooth Animations**: Powered by `react-native-reanimated` for 60fps animations
+- **Offline Persistence**: Local SQLite database stores timezone data
+- **Responsive Design**: Adapts to different screen sizes and orientations
+- **Modern UI**: Glassmorphism design with gradients and shadows
+- **API Integration**: Fetches timezone data from TimezoneDB API
+- **Error Handling**: Robust error handling and loading states
 
-```sh
-# Using npm
-npm start
+## 🏗️ Architecture
 
-# OR using Yarn
-yarn start
+### Project Structure
+
+```
+AnalogClock/
+├── src/
+│   ├── components/          # Reusable UI components
+│   │   ├── AnalogClock/     # Main clock component
+│   │   └── TimezoneSelector/ # Timezone picker component
+│   ├── config/              # Configuration files
+│   │   ├── EndPoint.ts      # API endpoints
+│   │   ├── http.ts          # HTTP client setup
+│   │   └── urls.tsx         # API URLs
+│   ├── database/            # SQLite database layer
+│   │   ├── database.ts      # Database operations
+│   │   └── types.ts         # Database types and schemas
+│   ├── hooks/               # Custom React hooks
+│   │   ├── useSelectedTimezone.ts  # Timezone selection hook
+│   │   └── useTimezones.ts  # Timezone data fetching hook
+│   ├── services/            # API services
+│   │   └── timezoneService.ts  # Timezone API integration
+│   └── utils/               # Utility functions
+│       └── clockUtils.ts    # Clock calculation utilities
+├── android/                 # Android native code
+├── ios/                     # iOS native code
+├── patches/                 # Package patches
+├── App.tsx                  # Main application component
+└── index.js                 # Application entry point
 ```
 
-## Step 2: Build and run your app
+### Technology Stack
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+#### Core Technologies
+- **React Native 0.83.1**: Cross-platform mobile framework
+- **React 19.2.0**: UI library with latest features
+- **TypeScript 5.8.3**: Type-safe development
 
-### Android
+#### UI & Animation
+- **react-native-reanimated 4.2.1**: 60fps animations for clock hands
+- **react-native-worklets 0.7.2**: JS worklets for animation
+- **react-native-safe-area-context 5.5.2**: Safe area handling
 
-```sh
-# Using npm
-npm run android
+#### Data & Storage
+- **react-native-sqlite-storage 6.0.1**: Local database for offline support
+- **axios 1.13.4**: HTTP client for API requests
 
-# OR using Yarn
-yarn android
+#### Developer Tools
+- **ESLint**: Code linting and quality
+- **Prettier**: Code formatting
+- **Jest**: Unit testing framework
+- **patch-package**: For managing npm package patches
+
+## 🎨 Component Details
+
+### AnalogClock Component
+The main clock component that renders:
+- **Clock Face**: Circular clock with 60 tick marks (hour and minute indicators)
+- **Numbers**: 12-hour format numbers positioned around the clock
+- **Hour Hand**: Rotates based on hours (includes minute precision)
+- **Minute Hand**: Rotates based on minutes (includes second precision)
+- **Second Hand**: Smooth continuous rotation
+- **Center Dot**: Red center dot as visual anchor
+- **Digital Display**: Shows time in HH:MM:SS AM/PM format
+
+**Key Features:**
+- Uses `useAnimatedStyle` from Reanimated for smooth 60fps animations
+- Calculates hand rotations: 
+  - Hour: 30° per hour + 0.5° per minute
+  - Minute: 6° per minute + 0.1° per second
+  - Second: 6° per second
+- Responsive sizing based on device width (90% of screen width)
+- Updates every second via `setInterval`
+
+### TimezoneSelector Component
+A picker component allowing users to select from available timezones:
+- Displays timezone names and GMT offsets
+- Integrates with `@react-native-picker/picker`
+- Saves selection to local storage for persistence
+
+### Database Layer
+SQLite operations for offline functionality:
+- **Tables:**
+  - `timezones`: Stores timezone data (countryName, zoneName, gmtOffset, timestamp)
+  - `preferences`: Stores user preferences and last selected timezone
+- **Operations:**
+  - Save/retrieve timezones in batches (50 at a time)
+  - Store last selected timezone
+  - Query timezones sorted by country name
+
+### Custom Hooks
+
+#### `useTimezones`
+- Fetches timezone data from TimezoneDB API
+- Falls back to cached database data if offline
+- Handles loading and error states
+- Returns timezone list for the selector
+
+#### `useSelectedTimezone`
+- Manages currently selected timezone
+- Persists selection to database
+- Loads last selected timezone on app start
+- Defaults to device timezone if no selection exists
+
+### API Integration
+- **Endpoint**: TimezoneDB API for worldwide timezone data
+- **HTTP Client**: Axios with configured base URL and interceptors
+- **Error Handling**: Graceful fallback to cached data on network errors
+
+### Utilities
+
+#### `clockUtils.ts`
+- `convertLocalToZone`: Converts local time to selected timezone
+- Handles GMT offset calculations
+- Used by AnalogClock to display correct time
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js >= 20
+- React Native development environment set up
+- Xcode (for iOS development)
+- Android Studio (for Android development)
+
+### Installation
+
+1. **Clone the repository:**
+```bash
+git clone <repository-url>
+cd AnalogClock
 ```
 
-### iOS
+2. **Install dependencies:**
+```bash
+yarn install
+# or
+npm install
+```
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+3. **Apply package patches:**
+```bash
+npx patch-package
+```
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+### iOS Setup
 
-```sh
+4. **Install CocoaPods dependencies:**
+```bash
+# Install Ruby bundler (first time only)
 bundle install
-```
 
-Then, and every time you update your native dependencies, run:
-
-```sh
+# Install iOS dependencies
+cd ios
 bundle exec pod install
+cd ..
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+### Running the Application
 
-```sh
-# Using npm
-npm run ios
+#### Start Metro Bundler
+```bash
+yarn start
+# or
+npm start
+```
 
-# OR using Yarn
+#### Run on iOS
+```bash
 yarn ios
+# or
+npm run ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+#### Run on Android
+```bash
+yarn android
+# or
+npm run android
+```
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## 🧪 Development
 
-## Step 3: Modify your app
+### Available Scripts
 
-Now that you have successfully run the app, let's make changes!
+- `yarn start`: Start Metro bundler
+- `yarn ios`: Run on iOS simulator
+- `yarn android`: Run on Android emulator
+- `yarn test`: Run Jest tests
+- `yarn lint`: Run ESLint
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+### Making Changes
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+The app supports **Fast Refresh** - simply save your changes and see them reflected immediately:
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+- **Android**: Press R twice or Ctrl+M (Windows/Linux) / Cmd+M (macOS) for Dev Menu
+- **iOS**: Press R in iOS Simulator or shake device for Dev Menu
 
-## Congratulations! :tada:
+## 🛠️ Build Configuration
 
-You've successfully run and modified your React Native App. :partying_face:
+### Android Patches
+The project includes a patch for `rn-user-defaults` to fix Android build issues:
+- Updates `compileSdkVersion` for compatibility
+- Applied automatically via `patch-package` on `postinstall`
 
-### Now what?
+### Babel Configuration
+Custom Babel configuration includes:
+- React Native preset
+- Reanimated plugin for worklet support
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## 🎯 Key Implementation Details
 
-# Troubleshooting
+### Animation Strategy
+- Uses `react-native-reanimated` for native-driven animations
+- Shared values (`useSharedValue`) for performance
+- `withTiming` for smooth 300ms transitions between rotations
+- Worklets for running animations on UI thread
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+### State Management
+- React hooks for local state management
+- Custom hooks encapsulate business logic
+- SQLite for persistent storage
+- No external state management library needed
 
-# Learn More
+### Timezone Handling
+- Fetches timezone list from external API
+- Caches up to 500 timezones in SQLite
+- Calculates time conversion using GMT offsets
+- Stores user's last selection for better UX
 
-To learn more about React Native, take a look at the following resources:
+### Performance Optimizations
+- Batch database inserts (50 records at a time)
+- Limits cached timezones to 500 entries
+- Uses `useAnimatedStyle` to avoid re-renders
+- Cleanup intervals on component unmount
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 📝 API Configuration
+
+The app uses the TimezoneDB API. Configure your API endpoint in:
+- `src/config/EndPoint.ts`: API endpoint constants
+- `src/config/urls.tsx`: Base URL configuration
+- `src/config/http.ts`: Axios instance with interceptors
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Metro Bundler Issues:**
+```bash
+# Clear cache and restart
+yarn start --reset-cache
+```
+
+**iOS Build Errors:**
+```bash
+cd ios
+bundle exec pod install --repo-update
+cd ..
+```
+
+**Android Build Errors:**
+- Ensure patches are applied: `npx patch-package`
+- Clean Android build: `cd android && ./gradlew clean && cd ..`
+
+### Known Issues
+- Worklets require proper Babel configuration (already included)
+- Some Android devices may require SDK updates
+
+## 📄 License
+
+This project is private and for educational/demonstration purposes.
+
+## 🤝 Contributing
+
+This is a homework/learning project. Contributions are not currently accepted.
+
+## 📧 Contact
+
+For questions or issues, please contact the project maintainer.
+
+---
+
+**Built with ❤️ using React Native**
