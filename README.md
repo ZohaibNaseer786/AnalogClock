@@ -2,10 +2,6 @@
 
 A beautiful, feature-rich **React Native** mobile application that displays an **analog clock** showing the current time across different timezones around the world. This cross-platform app runs on both iOS and Android with smooth animations and offline support.
 
-![React Native](https://img.shields.io/badge/React%20Native-0.83.1-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-
 ## 📱 Features
 
 ### Core Functionality
